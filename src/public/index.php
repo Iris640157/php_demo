@@ -1,6 +1,3 @@
-<?php
-require __DIR__ . '/../includes/connection.php';
-?>
 <!DOCTYPE html>
 <html>
 <head>

@@ -39,7 +39,7 @@ help:
 
 # --- Build and start ---
 start:
-	@docker compose up -d --build
+	@docker compose up -d
 	@echo -e "${GREEN}Containers are up!${NC}"
 	@echo -e "PHP: http://localhost:8080"
 	@echo -e "phpMyAdmin: http://localhost:8081"

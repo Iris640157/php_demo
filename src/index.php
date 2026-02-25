@@ -1,14 +1,31 @@
 <?php
-$host = "db";
-$user = "php_user";
-$password = "secret";
-$database = "php_app";
+/**
+ * Front controller: bootstrap once, then dispatch by folder structure (url = path).
+ */
+require __DIR__ . '/includes/connection.php';
 
-$conn = new mysqli($host, $user, $password, $database);
+$base = __DIR__;
+$path = trim($_GET['url'] ?? '/', '/');
 
-if ($conn->connect_error) {
-	die("Connection failed: " . $conn->connect_error);
+// Root: serve public front
+if ($path === '' || $path === 'index.php') {
+    $path = 'public/index.php';
+} else {
+    // Folder structure: "admin" -> admin/index.php, "admin/user/create.php" -> as-is
+    $path = str_replace('..', '', $path); // block traversal
+    if (substr($path, -4) !== '.php') {
+        $path = rtrim($path, '/') . '/index.php';
+    }
 }
 
-echo "Connected to MySQL successfully!";
-?>
+$fullPath = $base . '/' . $path;
+$realPath = realpath($fullPath);
+
+if ($realPath === false || strpos($realPath, $base) !== 0 || !is_file($realPath) || substr($realPath, -4) !== '.php') {
+    http_response_code(404);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo '404 Not Found';
+    return;
+}
+
+require $realPath;
